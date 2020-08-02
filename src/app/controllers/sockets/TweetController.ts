@@ -9,6 +9,16 @@ import TwitterApi from '@lib/TwitterApi';
 
 import Tweet from '@schemas/Tweet';
 
+interface TweetInterface {
+  text: string;
+  user: {
+    name: string;
+    profile_image_url: string;
+    screen_name: string;
+  };
+  timestamp_ms: number;
+}
+
 @SocketController('/twitter')
 export class SocketTestController {
   @OnMessage('search')
@@ -16,7 +26,7 @@ export class SocketTestController {
     @ConnectedSocket() socket: any,
     @MessageBody() message: any
   ): Promise<void> {
-    const { hashtag } = message;
+    const { hashtag }: { hashtag: string } = message;
 
     // socket.emit(`search_response_${hashtag}`, {
     //   viewed: false,
@@ -38,7 +48,7 @@ export class SocketTestController {
       'statuses/filter',
       { track: hashtag, lang: 'pt' },
       stream => {
-        stream.on('data', async tw => {
+        stream.on('data', async (tw: TweetInterface) => {
           const tweet = await Tweet.create({
             text: tw.text,
             userNickName: tw.user.screen_name,

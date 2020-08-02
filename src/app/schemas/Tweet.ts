@@ -1,13 +1,13 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 type Tweet = Document & {
-  token: string;
+  text: string;
   userNickName: string;
   userName: string;
-  userImgUrl: string;
+  userImgUrl?: string;
   times: number;
-  viewed: boolean;
-  approved: boolean;
+  viewed?: boolean;
+  approved?: boolean;
   hashtag: string;
 };
 
