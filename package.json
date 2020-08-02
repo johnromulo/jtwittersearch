@@ -1,6 +1,6 @@
 {
-  "name": "xhet",
-  "version": "1.0.1",
+  "name": "jtwitterfilter-backend",
+  "version": "1.0.2",
   "main": "index.js",
   "license": "MIT",
   "scripts": {

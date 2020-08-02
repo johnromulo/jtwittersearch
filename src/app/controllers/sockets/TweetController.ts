@@ -34,33 +34,29 @@ export class SocketTestController {
     //   __v: 0,
     // });
 
-    // TwitterApi.client.stream(
-    //   'statuses/filter',
-    //   { track: hashtag, lang: 'pt' },
-    //   stream => {
-    //     stream.on('data', async tw => {
-    //       console.log('data', tw.text);
+    TwitterApi.client.stream(
+      'statuses/filter',
+      { track: hashtag, lang: 'pt' },
+      stream => {
+        stream.on('data', async tw => {
+          const tweet = await Tweet.create({
+            text: tw.text,
+            userNickName: tw.user.screen_name,
+            userName: tw.user.name,
+            userImgUrl: tw.user.profile_image_url,
+            times: tw.timestamp_ms,
+            hashtag,
+          });
 
-    //       const tweet = await Tweet.create({
-    //         text: tw.text,
-    //         userNickName: tw.user.screen_name,
-    //         userName: tw.user.name,
-    //         userImgUrl: tw.user.profile_image_url,
-    //         times: tw.timestamp_ms,
-    //         hashtag,
-    //       });
+          socket.emit(`search_response_${hashtag}`, tweet);
+        });
 
-    //       console.log(`search_response_${hashtag}`, tweet);
-
-    //       socket.emit(`search_response_${hashtag}`, tweet);
-    //     });
-
-    //     stream.on('error', error => {
-    //       console.log(error);
-    //       // socket.emit('message_saved', error);
-    //     });
-    //   }
-    // );
+        stream.on('error', error => {
+          console.log(error);
+          // socket.emit('message_saved', error);
+        });
+      }
+    );
   }
 
   @OnMessage('assessment')
