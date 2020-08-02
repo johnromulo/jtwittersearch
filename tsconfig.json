@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "allowJs": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "skipLibCheck": true,
+    "strictPropertyInitialization": false,
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "typeRoots": ["node_modules/@types", "src/@types"],
+    "paths": {
+      "@config/*": ["config/*"],
+      "@controllers/*": ["app/controllers/*"],
+      "@services/*": ["app/services/*"],
+      "@jobs/*": ["app/jobs/*"],
+      "@schemas/*": ["app/schemas/*"],
+      "@models/*": ["app/models/*"],
+      "@middlewares/*": ["app/middlewares/*"],
+      "@validators/*": ["app/validators/*"],
+      "@queues/*": ["queues/*"],
+      "@lib/*": ["lib/*"],
+      "@utils/*": ["utils/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/__tests__/coverage/**/*"]
+}
