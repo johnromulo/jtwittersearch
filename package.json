@@ -11,12 +11,6 @@
     "test": "cross-env NODE_ENV=test jest --forceExit --runInBand --verbose",
     "heroku-postbuild": "yarn build"
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
-    }
-  },
   "dependencies": {
     "@sendgrid/client": "^6.5.3",
     "@sendgrid/mail": "^6.5.4",
@@ -65,7 +59,6 @@
     "faker": "^4.1.0",
     "faker-br": "^0.1.10",
     "helmet": "^3.20.0",
-    "husky": "^4.0.0",
     "ioredis": "^4.14.0",
     "ioredis-mock": "^4.16.1",
     "jest": "^25.1.0",
