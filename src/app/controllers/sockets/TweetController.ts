@@ -3,6 +3,8 @@ import {
   SocketController,
   MessageBody,
   OnMessage,
+  OnConnect,
+  OnDisconnect,
 } from 'socket-controllers';
 
 import TwitterApi from '@lib/TwitterApi';

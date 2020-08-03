@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "cross-env NODE_ENV=development ts-node-dev --respawn --transpileOnly -r tsconfig-paths/register ./src/server.ts",
+    "start": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only -r tsconfig-paths/register ./src/server.ts",
     "serve": "cross-env NODE_ENV=production node -r ./tsconfig-paths-bootstrap.js ./dist/server.js",
     "build": "yarn tsc",
     "debug": "cross-env NODE_ENV=development node --inspect -r sucrase/register src/server.ts",
