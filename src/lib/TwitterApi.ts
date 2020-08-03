@@ -12,4 +12,4 @@ class TwitterApi {
   }
 }
 
-export default new TwitterApi();
+export default TwitterApi;

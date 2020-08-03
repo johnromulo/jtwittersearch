@@ -10,6 +10,7 @@ import {
 import TwitterApi from '@lib/TwitterApi';
 
 import Tweet from '@schemas/Tweet';
+import { EventEmitter } from 'events';
 
 interface TweetInterface {
   text: string;
@@ -23,6 +24,39 @@ interface TweetInterface {
 
 @SocketController('/twitter')
 export class SocketTestController {
+  private clientsConnnection = 0;
+
+  private twitterApi: TwitterApi | null = null;
+
+  private twitterApiStream: EventEmitter | null = null;
+
+  private hashtagsList: string[] = [];
+
+  @OnConnect()
+  connect(): void {
+    this.clientsConnnection += 1;
+    if (this.clientsConnnection > 0 && !this.twitterApi) {
+      this.twitterApi = new TwitterApi();
+    }
+  }
+
+  @OnDisconnect()
+  disconnect(): void {
+    this.clientsConnnection =
+      this.clientsConnnection <= 0 ? 0 : this.clientsConnnection - 1;
+
+    if (this.clientsConnnection <= 0) {
+      if (this.twitterApiStream) {
+        this.twitterApiStream.removeAllListeners();
+
+        this.twitterApiStream = null;
+        this.hashtagsList = [];
+      }
+
+      this.twitterApi = null;
+    }
+  }
+
   @OnMessage('search')
   async search(
     @ConnectedSocket() socket: any,
@@ -30,27 +64,19 @@ export class SocketTestController {
   ): Promise<void> {
     const { hashtag }: { hashtag: string } = message;
 
-    // socket.emit(`search_response_${hashtag}`, {
-    //   viewed: false,
-    //   approved: null,
-    //   _id: '5f26b582022f846e31c4f337',
-    //   text: 'gg  #GOpaiN',
-    //   userNickName: 'rjohn1086',
-    //   userName: 'John Romulo',
-    //   userImgUrl:
-    //     'http://pbs.twimg.com/profile_images/909888520461983745/ZjGwnxyH_normal.jpg',
-    //   times: 1596372349463,
-    //   hashtag: 'GOpaiN',
-    //   createdAt: '2020-08-02T12:45:54.613Z',
-    //   updatedAt: '2020-08-02T12:45:54.613Z',
-    //   __v: 0,
-    // });
+    if (this.twitterApi) {
+      if (
+        !this.twitterApiStream ||
+        !this.hashtagsList.find(htg => htg === hashtag)
+      ) {
+        this.hashtagsList.push(hashtag);
 
-    TwitterApi.client.stream(
-      'statuses/filter',
-      { track: hashtag, lang: 'pt' },
-      stream => {
-        stream.on('data', async (tw: TweetInterface) => {
+        this.twitterApiStream = this.twitterApi.client.stream(
+          'statuses/filter',
+          { track: hashtag, lang: 'pt' }
+        );
+
+        this.twitterApiStream.on('data', async (tw: TweetInterface) => {
           const tweet = await Tweet.create({
             text: tw.text,
             userNickName: tw.user.screen_name,
@@ -63,13 +89,34 @@ export class SocketTestController {
           socket.emit(`search_response_${hashtag}`, tweet);
         });
 
-        stream.on('error', error => {
-          console.log(error);
-          // socket.emit('message_saved', error);
+        this.twitterApiStream.on('error', error => {
+          console.log('twitterApi error', error);
         });
       }
-    );
+    }
   }
+
+  // stream => {
+  //   console.log('twitterApi stream', new Date());
+  //   stream.on('data', async (tw: TweetInterface) => {
+  //     console.log('twitterApi data', new Date());
+  //     const tweet = await Tweet.create({
+  //       text: tw.text,
+  //       userNickName: tw.user.screen_name,
+  //       userName: tw.user.name,
+  //       userImgUrl: tw.user.profile_image_url,
+  //       times: tw.timestamp_ms,
+  //       hashtag,
+  //     });
+
+  //     socket.emit(`search_response_${hashtag}`, tweet);
+  //   });
+
+  //   stream.on('error', error => {
+  //     console.log('twitterApi error', error);
+  //     // socket.emit('message_saved', error);
+  //   });
+  // }
 
   @OnMessage('assessment')
   async assessment(
