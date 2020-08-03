@@ -77,6 +77,8 @@ export class SocketTestController {
         );
 
         this.twitterApiStream.on('data', async (tw: TweetInterface) => {
+          console.log('twitterApiStream data', new Date().toISOString());
+
           const tweet = await Tweet.create({
             text: tw.text,
             userNickName: tw.user.screen_name,
@@ -85,6 +87,8 @@ export class SocketTestController {
             times: tw.timestamp_ms,
             hashtag,
           });
+
+          console.log(`search_response_${hashtag}`, new Date().toISOString());
 
           socket.emit(`search_response_${hashtag}`, tweet);
         });
